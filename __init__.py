@@ -1,7 +1,7 @@
 bl_info = {
     "name": "JSON Mesh Export",
     "author": "Nathan Faucett",
-    "blender": (2,6,8),
+    "blender": (2,80,0),
     "version": (0,0,2),
     "location": "File > Import-Export",
     "description":  "Import-Export JSON data format (only export avalable now)",
@@ -64,6 +64,11 @@ class ExportJSON( bpy.types.Operator, ExportHelper ):
 # Common
 # ################################################################
 
+__classes__ = (
+    ImportJSON,
+    ExportJSON,
+)
+
 def menu_func_export( self, context ):
     default_path = bpy.data.filepath.replace(".blend", ".json")
     self.layout.operator( ExportJSON.bl_idname, text="JSON (.json)").filepath = default_path
@@ -72,14 +77,22 @@ def menu_func_import( self, context ):
     self.layout.operator( ImportJSON.bl_idname, text="JSON (.json)")
 
 def register():
-    bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_export.append(menu_func_export)
-    bpy.types.INFO_MT_file_import.append(menu_func_import)
+    # bpy.utils.register_module(__name__)
+    for c in __classes__:
+        bpy.utils.register_class(c);
+    # bpy.types.INFO_MT_file_export.append(menu_func_export)
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    # bpy.types.INFO_MT_file_import.append(menu_func_import)
+    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
-    bpy.types.INFO_MT_file_export.remove(menu_func_export)
-    bpy.types.INFO_MT_file_import.remove(menu_func_import)
+    # bpy.utils.unregister_module(__name__)
+    for c in reversed(__classes__):
+        bpy.utils.unregister_class(c);
+    # bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+    # bpy.types.INFO_MT_file_import.remove(menu_func_import)
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 if __name__ == "__main__":
     register()
